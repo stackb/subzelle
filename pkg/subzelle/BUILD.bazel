@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 
 go_library(
     name = "go_default_library",
@@ -8,13 +9,14 @@ go_library(
         "generator.go",
         "language.go",
         "plugin.go",
+        "process.go",
         "resolver.go",
         "types.go",
     ],
     importpath = "github.com/stackb/subzelle/pkg/subzelle",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto:go_default_library",
+        ":language_go_proto",
         "@bazel_gazelle//config:go_default_library",
         "@bazel_gazelle//label:go_default_library",
         "@bazel_gazelle//language:go_default_library",
@@ -24,4 +26,12 @@ go_library(
         "@com_github_golang_protobuf//proto:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
     ],
+)
+
+go_proto_library(
+    name = "language_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/stackb/subzelle/language",
+    proto = "//proto:language_proto",
+    visibility = ["//visibility:public"],
 )

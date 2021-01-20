@@ -3,6 +3,7 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 # gazelle:prefix github.com/stackb/subzelle
 gazelle(
     name = "gazelle",
-    # gazelle = "//cmd/subzelle",
     prefix = "github.com/stackb/subzelle",
 )
+
+exports_files(["subzelle.bash.in"])

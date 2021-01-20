@@ -1,0 +1,14 @@
+load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+
+gazelle_binary(
+    name = "subzelle",
+    # NOTE: DEFAULT_LANGUAGES intentionally excluded here - this won't do go or proto.
+    languages = ["//pkg/subzelle:go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+gazelle(
+    name = "gazelle",
+    gazelle = ":subzelle",
+    prefix = "github.com/stackb/subzelle",
+)

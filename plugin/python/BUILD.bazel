@@ -1,0 +1,28 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//:plugin.bzl", "subzelle_plugin")
+load("@rules_proto_grpc//python:defs.bzl", "python_grpc_library")
+
+subzelle_plugin(
+    name = "python",
+    executable = ":subzelle_python",
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "subzelle_python",
+    srcs = ["subzelle_python.py"],
+    deps = [":language_python_grpc"],
+)
+
+# gazelle:proto disable
+
+# py_test(
+#     name = "python_grpc_example_test",
+#     srcs = ["python_grpc_example_test.py"],
+#     deps = [":simple_service_python_grpc_library"],
+# )
+
+python_grpc_library(
+    name = "language_python_grpc",
+    deps = ["//proto:language_proto"],
+)

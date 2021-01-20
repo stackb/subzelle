@@ -1,4 +1,4 @@
-subzellePluginInfo = provider(fields = {
+SubzellePluginInfo = provider(fields = {
     "name": "proto plugin name",
     "address": "plugin gRPC address",
     "executable": "plugin tool executable",
@@ -6,9 +6,9 @@ subzellePluginInfo = provider(fields = {
 })
 
 def _subzelle_plugin_impl(ctx):
-    return [subzellePluginInfo(
+    return [SubzellePluginInfo(
         data = ctx.files.data,
-        executable = ctx.executable.tool,
+        executable = ctx.executable.executable,
         name = ctx.label.name,
         address = ctx.attr.address,
     )]

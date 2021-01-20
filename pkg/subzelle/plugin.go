@@ -7,7 +7,7 @@ import (
 
 var (
 	PluginDefaultAddress   = "localhost:50051"
-	PluginEnvVarNamePrefix = "subzelle_PLUGIN_"
+	PluginEnvVarNamePrefix = "SUBZELLE_PLUGIN_"
 )
 
 // PluginConfig captures the configuration required to launch and connect to a
@@ -31,7 +31,11 @@ func GetPluginConfig() *PluginConfig {
 	executable := maybeGetEnvVar(PluginEnvVarNamePrefix+"EXECUTABLE", "")
 	address := maybeGetEnvVar(PluginEnvVarNamePrefix+"ADDRESS", "")
 
-	return &PluginConfig{name, address, executable}
+	return &PluginConfig{
+		Name:       name,
+		Address:    address,
+		Executable: executable,
+	}
 }
 
 func mustGetEnvVar(key string) string {

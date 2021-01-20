@@ -18,7 +18,7 @@ load(
 )
 load(
     "//:plugin.bzl",
-    "subzellePluginInfo",
+    "SubzellePluginInfo",
 )
 
 def _subzelle_runner_impl(ctx):
@@ -35,10 +35,15 @@ def _subzelle_runner_impl(ctx):
         args.extend(["-build_tags", ",".join(ctx.attr.build_tags)])
     args.extend(ctx.attr.extra_args)
 
+    plugin = ctx.attr.plugin[SubzellePluginInfo]
+
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
     go_tool = ctx.toolchains["@io_bazel_rules_go//go:toolchain"].sdk.go
     substitutions = {
         "@@ARGS@@": shell.array_literal(args),
+        "@@SUBZELLE_PLUGIN_NAME@@": shell.quote(plugin.name),
+        "@@SUBZELLE_PLUGIN_ADDRESS@@": shell.quote(plugin.address),
+        "@@SUBZELLE_PLUGIN_EXECUTABLE@@": shell.quote(plugin.executable.path),
         "@@GAZELLE_LABEL@@": shell.quote(str(ctx.attr.subzelle.label)),
         "@@GAZELLE_SHORT_PATH@@": shell.quote(ctx.executable.subzelle.short_path),
         "@@GENERATED_MESSAGE@@": """
@@ -56,6 +61,7 @@ def _subzelle_runner_impl(ctx):
     )
     runfiles = ctx.runfiles(files = [
         ctx.executable.subzelle,
+        plugin.executable,
         go_tool,
     ])
     return [DefaultInfo(
@@ -78,7 +84,7 @@ _subzelle_runner = rule(
         ),
         "plugin": attr.label(
             doc = "The subzelle language sub-plugin",
-            providers = [subzellePluginInfo],
+            providers = [SubzellePluginInfo],
             mandatory = True,
         ),
         "mode": attr.string(
@@ -93,7 +99,7 @@ _subzelle_runner = rule(
         "prefix": attr.string(),
         "extra_args": attr.string_list(),
         "_template": attr.label(
-            default = "@bazel_gazelle//internal:gazelle.bash.in",
+            default = str(Label("//:subzelle.bash.in")),
             allow_single_file = True,
         ),
     },

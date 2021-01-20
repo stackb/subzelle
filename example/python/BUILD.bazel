@@ -2,6 +2,6 @@ load("//:def.bzl", "subzelle")
 
 subzelle(
     name = "subzelle",
-    # data = [],
+    plugin = "//plugin/python",
     prefix = "github.com/stackb/subzelle/example/python",
 )
