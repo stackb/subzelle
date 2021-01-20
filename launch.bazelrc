@@ -1,5 +1,5 @@
-build //pkg/cheetah --color=yes
+build //pkg/bazelle --color=yes
 
-codesearch deps(//pkg/cheetah) 
+codesearch deps(//pkg/bazelle) 
 
 codesearch deps(//proto/...) 

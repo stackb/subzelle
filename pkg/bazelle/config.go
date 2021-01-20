@@ -1,4 +1,4 @@
-package cheetah
+package bazelle
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	pb "github.com/stackb/bazelle/proto"
 )
 
-var ConfigurationBasename = ".cheetah.config"
+var ConfigurationBasename = ".bazelle.config"
 
 var active pb.Configuration
 
@@ -34,7 +34,7 @@ func init() {
 }
 
 func readConfiguration(dirname string) (*pb.Configuration, error) {
-	// looking for `${workspaceRoot}/.cheetah.prototext`
+	// looking for `${workspaceRoot}/.bazelle.prototext`
 	filename := filepath.Join(dirname, ConfigurationBasename)
 
 	// read the file as a string

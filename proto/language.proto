@@ -1,48 +1,123 @@
 syntax = "proto3";
 
-package build.stack.gazelle.cheetah.v1beta1;
+package build.stack.bazelle.configurer.v1beta1;
 
-service Language {
-    rpc Kinds(KindsRequest) returns (KindsResponse);
-    rpc Loads(LoadsRequest) returns (LoadsResponse);
-    rpc GenerateRules(GenerateRulesRequest) returns (GenerateRulesResponse);
+import "google/protobuf/struct.proto";
+
+// Configurer is the interface for language or library-specific configuration
+// extensions. Most (ideally all) modifications to Config should happen via this
+// interface.
+service Configurer {
+    // RegisterFlags registers command-line flags used by the extension. This
+	// method is called once with the root configuration when Gazelle starts.
+	// RegisterFlags may set an initial values in Config.Exts. When flags are
+	// set, they should modify these values.
+    rpc RegisterFlags(RegisterFlagsRequest) returns (ConfigFlagSet);
+
+	// CheckFlags validates the configuration after command line flags are
+	// parsed. This is called once with the root configuration when Gazelle
+	// starts. CheckFlags may set default values in flags or make implied
+	// changes.
+    rpc CheckFlags(ConfigFlagSet) returns (ConfigFlagSet);
+
+
+	// KnownDirectives returns a list of directive keys that this Configurer can
+	// interpret. Gazelle prints errors for directives that are not recoginized by
+	// any Configurer.
+    rpc KnownDirectives(KnownDirectivesRequest) returns (KnownDirectivesResponse);
+    
+    // Configure modifies the configuration using directives and other
+	// information extracted from a build file. Configure is called in each
+	// directory.
+	//
+	// c is the configuration for the current directory. It starts out as a copy
+	// of the configuration for the parent directory.
+	//
+	// rel is the slash-separated relative path from the repository root to the
+	// current directory. It is "" for the root directory itself.
+	//
+	// f is the build file for the current directory or nil if there is no
+	// existing build file.
+	rpc Configure(ConfigureRequest) returns (ConfigureResponse);
 }
 
-message FlagSet {
-    repeated Flag flag = 1;
+message RegisterFlagsRequest {
+    // the name of the command
+    string cmd = 1;
+
+    // The initial config flag set
+    ConfigFlagSet config_flag_set = 2;
 }
 
+message ConfigFlagSet {
+    // The configuration state
+    Config config = 1;
+
+    // The set of flags to add to the flag.FlagSet
+    repeated Flag flag = 2;
+}
+
+message CheckFlagsRequest {
+    // The initial configuration state
+    Config config = 1;
+
+    // The flag state before validation
+    repeated Flag flag = 2;
+}
+
+message KnownDirectivesRequest {
+}
+
+message KnownDirectivesResponse {
+    repeated string directive = 1;
+}
+
+message ConfigureRequest {
+    // the configuration for the current directory. It starts out as a copy of
+	// the configuration for the parent directory.
+    Config config = 1;
+
+    // rel is the slash-separated relative path from the repository root to the
+	// current directory. It is "" for the root directory itself.    
+    string rel = 2;
+
+	// f is the build file for the current directory or nil if there is no
+    // existing build file.
+    File File = 3;
+}
+
+message ConfigureResponse {
+}
+
+// Flag message models https://golang.org/pkg/flag/#Flag
 message Flag {
+    // The intended type of the flag
     enum Type {
-        UNKNOWN = 0;
-        STRING = 1;
-        INT = 2;
-        BOOL = 3;
+        TYPE_UNKNOWN = 0;
+        BOOL = 1;
+        DURATION = 2;
+        FLOAT_64 = 3;
+        INT = 4;
+        INT_64 = 5;
+        STRING = 6;
+        UINT = 7;
+        UINT_64 = 8;
     }
 
+    // The type of the flag
     Type type = 1;
+
+    // The name of the flag
     string name = 2;
-    string description = 3;
-}
 
-// Configuration is used to configure the language plugin.  By default, a file
-// .cheetah.prototext is expected as a peer of the WORKSPACE file.
-message Configuration {
-    message Server {
-        // The language name.
-        string language_name = 1;
+    // The help message
+    string usage = 3;
 
-        // The tcp address of the language server
-        string server_address = 2;
-    }
+    // The value as set
+    string value = 4;
 
-    message Configurer {
-
-    }
-
-    Server server = 1;
-
-    Configurer configurer = 2;
+    // the default value (as text); for usage message
+    string def_value = 5;
 }
 
 // Config holds information about how Gazelle should run. This is based on
@@ -86,7 +161,7 @@ message Config {
 	// KindMap maps from a kind name to its replacement. It provides a way for
 	// users to customize the kind of rules created by Gazelle, via
 	// # gazelle:map_kind.
-	//KindMap map[string]MappedKind 8
+	map<string,MappedKind> kind_map = 8;
 
 	// Repos is a list of repository rules declared in the main WORKSPACE file
 	// or in macros called by the main WORKSPACE file. This may affect rule
@@ -97,6 +172,8 @@ message Config {
 	// An empty list means "all languages".
 	repeated string langs = 10;
 
+    // NOT IMPLEMENTED:
+    //
 	// Exts is a set of configurable extensions. Generally, each language
 	// has its own set of extensions, but other modules may provide their own
 	// extensions as well. Values in here may be populated by command line
@@ -104,36 +181,127 @@ message Config {
 	//Exts map[string]interface{} 11
 }
 
-//
-// LoadInfo
-//
-
-message LoadsRequest {
-
+message MappedKind {
+    string from_kind = 1;
+    string kind_name = 2;
+    string kind_load = 3;
 }
 
-message LoadsResponse {
-    repeated LoadInfo Load = 1;
+
+// File provides editing functionality for a build file. You can create a new
+// file with EmptyFile or load an existing file with LoadFile. After changes
+// have been made, call Save to write changes back to a file.
+message File {
+    
+    // NOT IMPLEMENTED
+    //
+    // File is the underlying build file syntax tree. Some editing operations
+	// may modify this, but editing is not complete until Sync() is called.
+	// repeated BzlFile file = 1;
+
+    // NOT IMPLEMENTED
+    //
+	// function is the underlying syntax tree of a bzl file function.
+	// This is used for editing the bzl file function specified by the
+	// update-repos -to_macro option.
+	// function *function
+
+	// Pkg is the Bazel package this build file defines.
+	string pkg = 1;
+
+	// Path is the file system path to the build file (same as File.Path).
+	string path = 2;
+
+	// DefName is the name of the function definition this File refers to
+	// if loaded with LoadMacroFile or a similar function. Normally empty.
+	string def_name = 3;
+
+	// Directives is a list of configuration directives found in top-level
+	// comments in the file. This should not be modified after the file is read.
+	repeated FileDirective directive = 4;
+
+	// Loads is a list of load statements within the file. This should not
+	// be modified directly; use Load methods instead.
+	repeated Load load = 5;
+
+	// Rules is a list of rules within the file (or function calls that look like
+	// rules). This should not be modified directly; use Rule methods instead.
+	repeated Rule rule = 6;
+
+	// Content is the file's underlying disk content, which is recorded when the
+	// file is initially loaded and whenever it is saved back to disk. If the file
+	// is modified outside of Rule methods, Content must be manually updated in
+	// order to keep it in sync.
+	bytes content = 7;
 }
 
-// LoadInfo describes a file that Gazelle knows about and the symbols
-// it defines.
-message LoadInfo {
+message FileDirective {
+    string key = 1;
+    string value = 2;
+}
+
+// Load represents a load statement within a build file.
+message Load {
 	string name = 1;
-	repeated string symbols = 2;
-	repeated string after = 3;
+
+	string module = 2;
+
+	bool force_compact = 3;
+
+	repeated LoadSymbol symbol = 4;
 }
 
-//
-// KindInfo
-//
+message LoadSymbol {
+	string from = 1;
+	string to = 2;
+}
+
+// Rule represents a rule statement within a build file.
+message Rule {
+	// the kind of rule (TODO: what is this?)
+	string kind = 1;
+
+	// the name of the rule
+	string name = 2;
+
+	// the rule structure encapsulated as a dynamically typed struct.
+	google.protobuf.Struct fields = 3;
+}
+
+service Language {
+
+	// Kinds returns a map of maps rule names (kinds) and information on how to
+	// match and merge attributes that may be found in rules of those kinds. All
+	// kinds of rules generated for this language may be found here.
+    rpc Kinds(KindsRequest) returns (KindsResponse);
+
+    // Loads returns .bzl files and symbols they define. Every rule generated by
+	// GenerateRules, now or in the past, should be loadable from one of these
+	// files.
+    rpc Loads(LoadsRequest) returns (LoadsResponse);
+
+
+	// GenerateRules extracts build metadata from source files in a directory.
+	// GenerateRules is called in each directory where an update is requested in
+	// depth-first post-order.
+	//
+	// args contains the arguments for GenerateRules. This is passed as a struct
+	// to avoid breaking implementations in the future when new fields are
+	// added.
+	//
+	// A GenerateResult struct is returned. Optional fields may be added to this
+	// type in the future.
+	//
+	// Any non-fatal errors this function encounters should be logged using
+	// log.Print.
+    rpc GenerateRules(GenerateArgs) returns (GenerateResult);
+}
 
 message KindsRequest {
-
 }
 
 message KindsResponse {
-    repeated KindInfo kind = 1;
+    map<string,KindInfo> kinds = 1;
 }
 
 message KindInfo {
@@ -167,20 +335,19 @@ message KindInfo {
 	map<string,bool> resolve_attrs = 6;
 }
 
-//
-// GenerateResult
-//
-
-message GenerateRulesRequest {
-    GenerateArgs args = 1;
+message LoadsRequest {
 }
 
-message GenerateRulesResponse {
-    repeated GenerateRule generate_rule = 1;
+message LoadsResponse {
+    repeated LoadInfo Load = 1;
 }
 
-message GenerateRule {
-    string name = 1;
+// LoadInfo describes a file that Gazelle knows about and the symbols
+// it defines.
+message LoadInfo {
+	string name = 1;
+	repeated string symbols = 2;
+	repeated string after = 3;
 }
 
 message GenerateArgs {
@@ -198,7 +365,7 @@ message GenerateArgs {
 
 	// File is the build file for the directory. File is nil if there is
 	// no existing build file.
-	repeated File file = 4;
+	File file = 4;
 
 	// Subdirs is a list of subdirectories in the directory, including
 	// symbolic links to directories that Gazelle will follow.
@@ -216,63 +383,8 @@ message GenerateArgs {
     repeated Rule other_gen = 9;
 }
 
-
-// File provides editing functionality for a build file. You can create a
-// new file with EmptyFile or load an existing file with LoadFile. After
-// changes have been made, call Save to write changes back to a file.
-message File {
-	// File is the underlying build file syntax tree. Some editing operations
-	// may modify this, but editing is not complete until Sync() is called.
-	// repeated BzlFile file = 1;
-
-	// function is the underlying syntax tree of a bzl file function.
-	// This is used for editing the bzl file function specified by the
-	// update-repos -to_macro option.
-	// ? function *function
-
-	// Pkg is the Bazel package this build file defines.
-	string pkg = 1;
-
-	// Path is the file system path to the build file (same as File.Path).
-	string path = 2;
-
-	// DefName is the name of the function definition this File refers to
-	// if loaded with LoadMacroFile or a similar function. Normally empty.
-	string def_name = 3;
-
-	// Directives is a list of configuration directives found in top-level
-	// comments in the file. This should not be modified after the file is read.
-	repeated Directive directive = 4;
-
-	// Loads is a list of load statements within the file. This should not
-	// be modified directly; use Load methods instead.
-	repeated Load load = 5;
-
-	// Rules is a list of rules within the file (or function calls that look like
-	// rules). This should not be modified directly; use Rule methods instead.
-	repeated Rule rule = 6;
-
-	// Content is the file's underlying disk content, which is recorded when the
-	// file is initially loaded and whenever it is saved back to disk. If the file
-	// is modified outside of Rule methods, Content must be manually updated in
-	// order to keep it in sync.
-	bytes content = 7;
-}
-
-message Directive {
-
-}
-
-// Rule represents a rule statement within a build file.
-message Rule {
-	// stmt
-	string kind = 1;
-	// args    []bzl.Expr
-	// attrs   map[string]*bzl.AssignExpr
-	// private map[string]interface{}
-}
-
-
-message Load {
-
+message GenerateResult {
+    repeated Rule gen = 1;
+    repeated Rule empty = 2;
+    repeated google.protobuf.Struct imports = 3;
 }
