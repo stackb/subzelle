@@ -4,8 +4,8 @@ load("@rules_proto_grpc//python:defs.bzl", "python_grpc_library")
 
 subzelle_plugin(
     name = "python",
-    executable = ":subzelle",
     address = "0.0.0.0:50051",
+    executable = ":subzelle",
     visibility = ["//visibility:public"],
 )
 

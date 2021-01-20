@@ -2,6 +2,7 @@ package subzelle
 
 import (
 	"context"
+	"log"
 
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"github.com/bazelbuild/bazel-gazelle/rule"
@@ -10,6 +11,7 @@ import (
 )
 
 func (b *subzelle) Kinds() map[string]rule.KindInfo {
+	log.Println("Kinds ->")
 	response, err := b.client.Kinds(context.Background(), &lpb.KindsRequest{})
 	if err != nil {
 		fatalError(err)
@@ -24,6 +26,7 @@ func (b *subzelle) Kinds() map[string]rule.KindInfo {
 }
 
 func (b *subzelle) Loads() []rule.LoadInfo {
+	log.Println("Loads ->")
 	response, err := b.client.Loads(context.Background(), &lpb.LoadsRequest{})
 	if err != nil {
 		fatalError(err)
@@ -33,6 +36,7 @@ func (b *subzelle) Loads() []rule.LoadInfo {
 }
 
 func (b *subzelle) GenerateRules(args language.GenerateArgs) language.GenerateResult {
+	log.Println("GenerateRules ->")
 	request := generateArgsToProto(args)
 
 	response, err := b.client.GenerateRules(context.Background(), request)

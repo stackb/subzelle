@@ -8,20 +8,62 @@ from proto import (
 )
 
 class LanguageServicer(lgrpc.LanguageServicer):
-    # 
-    def Create(self, request, context):
-        return lpb.CreateResponse(id=1001, name=request.name)
+    def Kinds(self, request, context):
+        print("Kinds <-")
+        return lpb.KindsResponse(kinds={
+            "py_binary": lpb.KindInfo(
+                match_any=True,
+                non_empty_attrs={"srcs": True, "deps": True},
+                mergeable_attrs={"srcs": True},
+                resolve_attrs={"deps": True},
+            ),
+            "py_library": lpb.KindInfo(
+                match_any=True,
+                non_empty_attrs={"srcs": True, "deps": True},
+                mergeable_attrs={"srcs": True},
+                resolve_attrs={"deps": True},
+            ),
+        })
+
+    def Loads(self, request, context):
+        print("Loads <-")
+        return lpb.LoadsResponse(Load=[
+            lpb.LoadInfo(
+                name="@rules_python//python:defs.bzl",
+                symbols=["py_binary", "py_library", "py_test"],
+            ),
+        ])
+
+    def RegisterFlags(self, request, context):
+        print("RegisterFlags <-")
+        return request.config_flag_set
+
+    def CheckFlags(self, request, context):
+        print("CheckFlags <-")
+        return request
+
+    def KnownDirectives(self, request, context):
+        print("KnownDirectives <-")
+        return lpb.KnownDirectivesResponse(directive=[])
+
+    def Configure(self, request, context):
+        print("Configure <-")
+        return request
+
+    def GenerateRules(self, request, context):
+        print("GenerateRules <- %r" % request)
+        return lpb.GenerateResult()
+
 
 def main():
     address = "[::]:50051"
     print("Starting subplugin gRPC server on " + address)
-    # Create and start the server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     lgrpc.add_LanguageServicer_to_server(LanguageServicer(), server)
     server.add_insecure_port(address)
     server.start()
     server.wait_for_termination()
-    # print("Stopping subplugin gRPC server.")
+
 
 if __name__ == "__main__":
     main()

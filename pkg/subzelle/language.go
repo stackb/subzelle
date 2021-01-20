@@ -35,20 +35,15 @@ func NewLanguage() language.Language {
 		if err != nil {
 			fatalError(fmt.Errorf("could not start plugin %q: %v", plugin.Path, err))
 		}
-	} else {
-		log.Fatalf("connection address: %v", address)
 	}
 
 	conn, err := grpc.Dial(address,
 		grpc.WithInsecure(),
 	)
-	log.Printf("connection? %v,%v", conn, err)
+
 	if err != nil {
-		log.Printf("connection error: %v", err)
 		fatalError(err)
 	}
-
-	log.Printf("connection??? %v", conn)
 
 	return &subzelle{
 		plugin: plugin,

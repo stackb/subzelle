@@ -93,6 +93,9 @@ func configFromProto(dst *config.Config, src *lpb.Config) {
 }
 
 func fileToProto(file *rule.File) *lpb.File {
+	if file == nil {
+		return nil
+	}
 	return &lpb.File{
 		Pkg:       file.Pkg,
 		Path:      file.Path,

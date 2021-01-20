@@ -62,5 +62,5 @@ func maybeGetEnvVar(key, defaultValue string) string {
 
 func fatalError(err error) {
 	fmt.Fprintf(os.Stderr, "could not dial remote: %v\n", err)
-	// os.Exit(1)
+	os.Exit(1)
 }

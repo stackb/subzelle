@@ -27,12 +27,12 @@ def _subzelle_runner_impl(ctx):
         "-mode",
         ctx.attr.mode,
     ]
-    if ctx.attr.external:
-        args.extend(["-external", ctx.attr.external])
-    if ctx.attr.prefix:
-        args.extend(["-go_prefix", ctx.attr.prefix])
-    if ctx.attr.build_tags:
-        args.extend(["-build_tags", ",".join(ctx.attr.build_tags)])
+    # if ctx.attr.external:
+    #     args.extend(["-external", ctx.attr.external])
+    # if ctx.attr.prefix:
+    #     args.extend(["-go_prefix", ctx.attr.prefix])
+    # if ctx.attr.build_tags:
+    #     args.extend(["-build_tags", ",".join(ctx.attr.build_tags)])
     args.extend(ctx.attr.extra_args)
 
     plugin = ctx.attr.plugin[SubzellePluginInfo]
