@@ -1,0 +1,5 @@
+build //pkg/cheetah --color=yes
+
+codesearch deps(//pkg/cheetah) 
+
+codesearch deps(//proto/...) 

@@ -1,0 +1,278 @@
+syntax = "proto3";
+
+package build.stack.gazelle.cheetah.v1beta1;
+
+service Language {
+    rpc Kinds(KindsRequest) returns (KindsResponse);
+    rpc Loads(LoadsRequest) returns (LoadsResponse);
+    rpc GenerateRules(GenerateRulesRequest) returns (GenerateRulesResponse);
+}
+
+message FlagSet {
+    repeated Flag flag = 1;
+}
+
+message Flag {
+    enum Type {
+        UNKNOWN = 0;
+        STRING = 1;
+        INT = 2;
+        BOOL = 3;
+    }
+
+    Type type = 1;
+    string name = 2;
+    string description = 3;
+}
+
+// Configuration is used to configure the language plugin.  By default, a file
+// .cheetah.prototext is expected as a peer of the WORKSPACE file.
+message Configuration {
+    message Server {
+        // The language name.
+        string language_name = 1;
+
+        // The tcp address of the language server
+        string server_address = 2;
+    }
+
+    message Configurer {
+
+    }
+
+    Server server = 1;
+
+    Configurer configurer = 2;
+}
+
+// Config holds information about how Gazelle should run. This is based on
+// command line arguments, directives, other hints in build files.
+//
+// A Config applies to a single directory. A Config is created for the
+// repository root directory, then copied and modified for each subdirectory.
+//
+// Config itself contains only general information. Most configuration
+// information is language-specific and is stored in Exts. This information
+// is modified by extensions that implement Configurer.
+message Config {
+	// RepoRoot is the absolute, canonical path to the root directory of the
+	// repository with all symlinks resolved.
+	string repo_root = 1;
+
+	// RepoName is the name of the repository.
+	string repo_name = 2;
+
+	// ReadBuildFilesDir is the absolute path to a directory where
+	// build files should be read from instead of RepoRoot.
+	string read_build_files_dir = 3;
+
+	// Write_build_filesDir is the absolute path to a directory where
+	// build files should be written to instead of RepoRoot.
+	string write_build_files_dir = 4;
+
+	// Valid_build_fileNames is a list of base names that are considered valid
+	// build files. Some repositories may have files named "BUILD" that are not
+	// used by Bazel and should be ignored. Must contain at least one string.
+	repeated string valid_build_file_names = 5;
+
+	// ShouldFix determines whether Gazelle attempts to remove and replace usage
+	// of deprecated rules.
+	bool should_fix = 6;
+
+	// IndexLibraries determines whether Gazelle should build an index of
+	// libraries in the workspace for dependency resolution
+	bool index_libraries = 7;
+
+	// KindMap maps from a kind name to its replacement. It provides a way for
+	// users to customize the kind of rules created by Gazelle, via
+	// # gazelle:map_kind.
+	//KindMap map[string]MappedKind 8
+
+	// Repos is a list of repository rules declared in the main WORKSPACE file
+	// or in macros called by the main WORKSPACE file. This may affect rule
+	// generation and dependency resolution.
+	//Repos []*rule.Rule 9
+
+	// Langs is a list of language names which Gazelle should process.
+	// An empty list means "all languages".
+	repeated string langs = 10;
+
+	// Exts is a set of configurable extensions. Generally, each language
+	// has its own set of extensions, but other modules may provide their own
+	// extensions as well. Values in here may be populated by command line
+	// arguments, directives in build files, or other mechanisms.
+	//Exts map[string]interface{} 11
+}
+
+//
+// LoadInfo
+//
+
+message LoadsRequest {
+
+}
+
+message LoadsResponse {
+    repeated LoadInfo Load = 1;
+}
+
+// LoadInfo describes a file that Gazelle knows about and the symbols
+// it defines.
+message LoadInfo {
+	string name = 1;
+	repeated string symbols = 2;
+	repeated string after = 3;
+}
+
+//
+// KindInfo
+//
+
+message KindsRequest {
+
+}
+
+message KindsResponse {
+    repeated KindInfo kind = 1;
+}
+
+message KindInfo {
+	// MatchAny is true if a rule of this kind may be matched with any rule of
+	// the same kind, regardless of attributes, if exactly one rule is present a
+	// build file.
+	bool match_any = 1;
+
+	// MatchAttrs is a list of attributes used in matching. For example, for
+	// go_library, this list contains "importpath". Attributes are matched in
+	// order.
+	repeated string match_attrs = 2;
+
+	// NonEmptyAttrs is a set of attributes that, if present, disqualify a rule
+	// from being deleted after merge.
+	map<string,bool> non_empty_attrs = 3;
+
+	// SubstituteAttrs is a set of attributes that should be substituted after
+	// matching and before merging. For example, suppose generated rule A
+	// references B via an "embed" attribute, and B matches against rule C. The
+	// label for B in A's "embed" must be substituted with a label for C.
+	// "embed" would need to be in this set.
+	map<string,bool> substitute_attrs = 4;
+
+	// MergeableAttrs is a set of attributes that should be merged before
+	// dependency resolution. See rule.Merge.
+	map<string,bool> mergeable_attrs = 5;
+
+	// ResolveAttrs is a set of attributes that should be merged after
+	// dependency resolution. See rule.Merge.
+	map<string,bool> resolve_attrs = 6;
+}
+
+//
+// GenerateResult
+//
+
+message GenerateRulesRequest {
+    GenerateArgs args = 1;
+}
+
+message GenerateRulesResponse {
+    repeated GenerateRule generate_rule = 1;
+}
+
+message GenerateRule {
+    string name = 1;
+}
+
+message GenerateArgs {
+	// Config is the configuration for the directory where rules are being
+	// generated.
+	Config config = 1;
+
+	// Dir is the canonical absolute path to the directory.
+	string dir = 2;
+
+	// Rel is the slash-separated path to the directory, relative to the
+	// repository root ("" for the root directory itself). This may be used
+	// as the package name in labels.
+	string rel = 3;
+
+	// File is the build file for the directory. File is nil if there is
+	// no existing build file.
+	repeated File file = 4;
+
+	// Subdirs is a list of subdirectories in the directory, including
+	// symbolic links to directories that Gazelle will follow.
+	// RegularFiles is a list of regular files including other symbolic
+	// links.
+	// GeneratedFiles is a list of generated files in the directory
+	// (usually these are mentioned as "out" or "outs" attributes in rules).
+    repeated string subdirs = 5;
+    repeated string regular_files = 6;
+    repeated string gen_files = 7;
+
+	// OtherEmpty is a list of empty rules generated by other languages.
+    repeated Rule other_empty = 8;
+    // OtherGen is a list of generated rules generated by other languages.
+    repeated Rule other_gen = 9;
+}
+
+
+// File provides editing functionality for a build file. You can create a
+// new file with EmptyFile or load an existing file with LoadFile. After
+// changes have been made, call Save to write changes back to a file.
+message File {
+	// File is the underlying build file syntax tree. Some editing operations
+	// may modify this, but editing is not complete until Sync() is called.
+	// repeated BzlFile file = 1;
+
+	// function is the underlying syntax tree of a bzl file function.
+	// This is used for editing the bzl file function specified by the
+	// update-repos -to_macro option.
+	// ? function *function
+
+	// Pkg is the Bazel package this build file defines.
+	string pkg = 1;
+
+	// Path is the file system path to the build file (same as File.Path).
+	string path = 2;
+
+	// DefName is the name of the function definition this File refers to
+	// if loaded with LoadMacroFile or a similar function. Normally empty.
+	string def_name = 3;
+
+	// Directives is a list of configuration directives found in top-level
+	// comments in the file. This should not be modified after the file is read.
+	repeated Directive directive = 4;
+
+	// Loads is a list of load statements within the file. This should not
+	// be modified directly; use Load methods instead.
+	repeated Load load = 5;
+
+	// Rules is a list of rules within the file (or function calls that look like
+	// rules). This should not be modified directly; use Rule methods instead.
+	repeated Rule rule = 6;
+
+	// Content is the file's underlying disk content, which is recorded when the
+	// file is initially loaded and whenever it is saved back to disk. If the file
+	// is modified outside of Rule methods, Content must be manually updated in
+	// order to keep it in sync.
+	bytes content = 7;
+}
+
+message Directive {
+
+}
+
+// Rule represents a rule statement within a build file.
+message Rule {
+	// stmt
+	string kind = 1;
+	// args    []bzl.Expr
+	// attrs   map[string]*bzl.AssignExpr
+	// private map[string]interface{}
+}
+
+
+message Load {
+
+}

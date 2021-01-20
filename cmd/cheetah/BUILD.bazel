@@ -1,0 +1,16 @@
+load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+
+gazelle_binary(
+    name = "cheetah",
+    languages = DEFAULT_LANGUAGES + [
+        "//pkg/cheetah",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# gazelle:prefix github.com/stackb/bazelle
+gazelle(
+    name = "gazelle",
+    gazelle = ":cheetah",
+    prefix = "github.com/stackb/bazelle",
+)

@@ -1,0 +1,8 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/stackb/bazelle
+gazelle(
+    name = "gazelle",
+    # gazelle = "//cmd/cheetah",
+    prefix = "github.com/stackb/bazelle",
+)
