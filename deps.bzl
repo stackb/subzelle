@@ -1,27 +1,15 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def base_deps():
-    # Release: v3.12.3
-    # TargetCommitish: master
-    # Date: 2020-06-02 22:12:47 +0000 UTC
-    # URL: https://github.com/protocolbuffers/protobuf/releases/tag/v3.12.3
-    # Size: 5350631 (5.4 MB)
     http_archive(
         name = "com_google_protobuf",
-        sha256 = "71030a04aedf9f612d2991c1c552317038c3c5a2b578ac4745267a45e7037c29",
-        strip_prefix = "protobuf-3.12.3",
+        sha256 = "d0f5f605d0d656007ce6c8b5a82df3037e1d8fe8b121ed42e536f569dec16113",
+        strip_prefix = "protobuf-3.14.0",
         urls = [
-            "https://github.com/protocolbuffers/protobuf/archive/v3.12.3.tar.gz",
+            "https://github.com/protocolbuffers/protobuf/archive/v3.14.0.tar.gz",
         ],
     )
 
-    # Release: v1.34.1
-    # TargetCommitish: v1.34.x
-    # Date: 2021-01-13 00:05:01 +0000 UTC
-    # URL: https://github.com/grpc/grpc/releases/tag/v1.34.1
-    # Size: 7723754 (7.7 MB)
-    #
-    # This dependency is declared in the WORKSPACE file to avoid a dependency cycle.
     http_archive(
         name = "com_github_grpc_grpc",
         sha256 = "c260a1dcdd26a78a9596494a3f41f9594ab5ec3a4d65cba4658bdee2b55ac844",
@@ -31,18 +19,30 @@ def base_deps():
         ],
     )
 
-    # Branch: master
-    # Commit: 99e0cf0e35f21ae9ba601e3c42d133c23abf1c25
-    # Date: 2020-10-15 14:32:58 +0000 UTC
-    # URL: https://github.com/bazelbuild/rules_go/commit/99e0cf0e35f21ae9ba601e3c42d133c23abf1c25
-    #
-    # Announce release 0.24.4, 0.23.12 [skip ci] (#2680)
-    # Size: 516973 (517 kB)
+    # # Branch: master
+    # # Commit: 99e0cf0e35f21ae9ba601e3c42d133c23abf1c25
+    # # Date: 2020-10-15 14:32:58 +0000 UTC
+    # # URL: https://github.com/bazelbuild/rules_go/commit/99e0cf0e35f21ae9ba601e3c42d133c23abf1c25
+    # #
+    # # Announce release 0.24.4, 0.23.12 [skip ci] (#2680)
+    # # Size: 516973 (517 kB)
+    # http_archive(
+    #     name = "io_bazel_rules_go",
+    #     sha256 = "7f52bf5679e2d7ae90d25cce25af80707eaac0e497d67f970a0c0704011163db",
+    #     strip_prefix = "rules_go-99e0cf0e35f21ae9ba601e3c42d133c23abf1c25",
+    #     urls = ["https://github.com/bazelbuild/rules_go/archive/99e0cf0e35f21ae9ba601e3c42d133c23abf1c25.tar.gz"],
+    # )
+
+    # Release: v0.24.11
+    # TargetCommitish: release-0.24
+    # Date: 2021-01-19 23:11:54 +0000 UTC
+    # URL: https://github.com/bazelbuild/rules_go/releases/tag/v0.24.11
+    # Size: 523890 (524 kB)
     http_archive(
         name = "io_bazel_rules_go",
-        sha256 = "7f52bf5679e2d7ae90d25cce25af80707eaac0e497d67f970a0c0704011163db",
-        strip_prefix = "rules_go-99e0cf0e35f21ae9ba601e3c42d133c23abf1c25",
-        urls = ["https://github.com/bazelbuild/rules_go/archive/99e0cf0e35f21ae9ba601e3c42d133c23abf1c25.tar.gz"],
+        sha256 = "d2b5751d8ae55ac011540453cf9da49ee12b832d0a98ca8ffae99285abb481f7",
+        strip_prefix = "rules_go-0.24.11",
+        urls = ["https://github.com/bazelbuild/rules_go/archive/v0.24.11.tar.gz"],
     )
 
     http_archive(

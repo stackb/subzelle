@@ -1,0 +1,5 @@
+# build:macos --copt=-DGRPC_BAZEL_BUILD
+# build:macos --action_env=GRPC_BAZEL_RUNTIME=1
+# build:macos --features=-supports_dynamic_linker
+# build:macos --dynamic_mode=off
+# build --config=macos
