@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/resolve"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 
-	pb "github.com/stackb/bazelle/proto"
+	pb "github.com/stackb/subzelle/proto"
 )
 
 func (x *rpcLang) Kinds() map[string]rule.KindInfo {

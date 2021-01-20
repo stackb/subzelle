@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"flag"
@@ -7,7 +7,7 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 
-	lpb "github.com/stackb/bazelle/language"
+	lpb "github.com/stackb/subzelle/language"
 )
 
 //

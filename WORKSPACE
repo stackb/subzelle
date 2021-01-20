@@ -1,4 +1,4 @@
-workspace(name = "build_stack_bazelle")
+workspace(name = "build_stack_subzelle")
 
 load("//:deps.bzl", "base_deps")
 

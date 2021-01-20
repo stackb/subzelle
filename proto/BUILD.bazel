@@ -12,7 +12,7 @@ proto_library(
 go_proto_library(
     name = "language_go_proto",
     compilers = ["@io_bazel_rules_go//proto:go_grpc"],
-    importpath = "github.com/stackb/bazelle/language",
+    importpath = "github.com/stackb/subzelle/language",
     proto = ":language_proto",
     visibility = ["//visibility:public"],
 )
@@ -20,6 +20,6 @@ go_proto_library(
 go_library(
     name = "go_default_library",
     embed = [":language_go_proto"],
-    importpath = "github.com/stackb/bazelle/language",
+    importpath = "github.com/stackb/subzelle/language",
     visibility = ["//visibility:public"],
 )

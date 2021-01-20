@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/resolve"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 
-	pb "github.com/stackb/bazelle/proto"
+	pb "github.com/stackb/subzelle/proto"
 )
 
 type rpcLang struct {
@@ -58,23 +58,6 @@ func (x *rpcLang) Loads() []rule.LoadInfo {
 		fatalError(err)
 	}
 	return makeLoadInfos(resp.Load)
-}
-
-// RegisterFlags implements part of the Configurer interface
-func (x *rpcLang) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config) {
-}
-
-// CheckFlags implements part of the Configurer interface
-func (x *rpcLang) CheckFlags(fs *flag.FlagSet, c *config.Config) error {
-	return nil
-}
-
-// KnownDirectives implements part of the Configurer interface
-func (x *rpcLang) KnownDirectives() []string {
-	return nil
-}
-
-func (x *rpcLang) Configure(c *config.Config, rel string, f *rule.File) {
 }
 
 func (x *rpcLang) GenerateRules(args language.GenerateArgs) language.GenerateResult {

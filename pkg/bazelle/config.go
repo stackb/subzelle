@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"fmt"
@@ -8,10 +8,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	pb "github.com/stackb/bazelle/proto"
+	pb "github.com/stackb/subzelle/proto"
 )
 
-var ConfigurationBasename = ".bazelle.config"
+var ConfigurationBasename = ".subzelle.config"
 
 var active pb.Configuration
 
@@ -34,7 +34,7 @@ func init() {
 }
 
 func readConfiguration(dirname string) (*pb.Configuration, error) {
-	// looking for `${workspaceRoot}/.bazelle.prototext`
+	// looking for `${workspaceRoot}/.subzelle.prototext`
 	filename := filepath.Join(dirname, ConfigurationBasename)
 
 	// read the file as a string

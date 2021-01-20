@@ -1,5 +1,5 @@
-build //pkg/bazelle --color=yes
+codesearch deps(//cmd/subzelle)
 
-codesearch deps(//pkg/bazelle) 
+codesearch deps(//cmd/subzelle:gazelle)
 
-codesearch deps(//proto/...) 
+codesearch deps(//example/python:gazelle)

@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 
-	lpb "github.com/stackb/bazelle/language"
+	lpb "github.com/stackb/subzelle/language"
 )
 
-func (b *Bazelle) Kinds() map[string]rule.KindInfo {
+func (b *subzelle) Kinds() map[string]rule.KindInfo {
 	response, err := b.languageClient.Kinds(context.Background(), &lpb.KindsRequest{})
 	if err != nil {
 		fatalError(err)
@@ -23,7 +23,7 @@ func (b *Bazelle) Kinds() map[string]rule.KindInfo {
 	return result
 }
 
-func (b *Bazelle) Loads() []rule.LoadInfo {
+func (b *subzelle) Loads() []rule.LoadInfo {
 	response, err := b.languageClient.Loads(context.Background(), &lpb.LoadsRequest{})
 	if err != nil {
 		fatalError(err)
@@ -32,7 +32,7 @@ func (b *Bazelle) Loads() []rule.LoadInfo {
 	return loadInfosFromProto(response.Load)
 }
 
-func (b *Bazelle) GenerateRules(args language.GenerateArgs) language.GenerateResult {
+func (b *subzelle) GenerateRules(args language.GenerateArgs) language.GenerateResult {
 	request := generateArgsToProto(args)
 
 	response, err := b.languageClient.GenerateRules(context.Background(), request)

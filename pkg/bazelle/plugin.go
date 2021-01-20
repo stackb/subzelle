@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 var (
 	PluginDefaultAddress   = "localhost:50051"
-	PluginEnvVarNamePrefix = "BAZELLE_PLUGIN_"
+	PluginEnvVarNamePrefix = "subzelle_PLUGIN_"
 )
 
 // PluginConfig captures the configuration required to launch and connect to a
@@ -37,7 +37,7 @@ func GetPluginConfig() *PluginConfig {
 func mustGetEnvVar(key string) string {
 	value, ok := os.LookupEnv(key)
 	if !ok {
-		fatalError(fmt.Errorf("Required environment variable %q is not set", key))
+		fatalError(fmt.Errorf("Required environment variable %q is not set\n", key))
 	}
 	return value
 }

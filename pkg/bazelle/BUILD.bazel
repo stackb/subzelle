@@ -11,7 +11,7 @@ go_library(
         "resolver.go",
         "types.go",
     ],
-    importpath = "github.com/stackb/bazelle/pkg/bazelle",
+    importpath = "github.com/stackb/subzelle/pkg/subzelle",
     visibility = ["//visibility:public"],
     deps = [
         "//proto:go_default_library",

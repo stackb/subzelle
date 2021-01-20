@@ -1,14 +1,14 @@
-package bazelle
+package subzelle
 
 import (
 	"google.golang.org/grpc"
 
 	"github.com/bazelbuild/bazel-gazelle/language"
 
-	lpb "github.com/stackb/bazelle/language"
+	lpb "github.com/stackb/subzelle/language"
 )
 
-type Bazelle struct {
+type subzelle struct {
 	plugin           *PluginConfig
 	languageClient   lpb.LanguageClient
 	configurerClient lpb.ConfigurerClient
@@ -25,7 +25,7 @@ func NewLanguage() language.Language {
 		fatalError(err)
 	}
 
-	return &Bazelle{
+	return &subzelle{
 		plugin:           plugin,
 		languageClient:   lpb.NewLanguageClient(conn),
 		configurerClient: lpb.NewConfigurerClient(conn),

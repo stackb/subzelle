@@ -1,8 +1,7 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
+load("//:def.bzl", "subzelle")
 
-gazelle(
-    name = "gazelle",
-    data = [],
-    gazelle = "//cmd/bazelle",
-    prefix = "github.com/stackb/bazelle/example/python",
+subzelle(
+    name = "subzelle",
+    # data = [],
+    prefix = "github.com/stackb/subzelle/example/python",
 )

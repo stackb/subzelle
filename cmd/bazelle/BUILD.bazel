@@ -1,16 +1,16 @@
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 
 gazelle_binary(
-    name = "bazelle",
+    name = "subzelle",
     languages = DEFAULT_LANGUAGES + [
-        "//pkg/bazelle:go_default_library",
+        "//pkg/subzelle:go_default_library",
     ],
     visibility = ["//visibility:public"],
 )
 
-# gazelle:prefix github.com/stackb/bazelle
+# gazelle:prefix github.com/stackb/subzelle
 gazelle(
     name = "gazelle",
-    gazelle = ":bazelle",
-    prefix = "github.com/stackb/bazelle",
+    gazelle = ":subzelle",
+    prefix = "github.com/stackb/subzelle",
 )

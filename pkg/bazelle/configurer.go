@@ -1,4 +1,4 @@
-package bazelle
+package subzelle
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/config"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 
-	lpb "github.com/stackb/bazelle/language"
+	lpb "github.com/stackb/subzelle/language"
 )
 
 // RegisterFlags implements part of the Configurer interface
-func (b *Bazelle) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config) {
+func (b *subzelle) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config) {
 	configFlagSet := configFlagSetToProto(c, fs)
 
 	response, err := b.configurerClient.RegisterFlags(context.Background(), &lpb.RegisterFlagsRequest{
@@ -27,7 +27,7 @@ func (b *Bazelle) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config) 
 }
 
 // CheckFlags implements part of the Configurer interface
-func (b *Bazelle) CheckFlags(fs *flag.FlagSet, c *config.Config) error {
+func (b *subzelle) CheckFlags(fs *flag.FlagSet, c *config.Config) error {
 	configFlagSet := configFlagSetToProto(c, fs)
 
 	response, err := b.configurerClient.CheckFlags(context.Background(), configFlagSet)
@@ -42,7 +42,7 @@ func (b *Bazelle) CheckFlags(fs *flag.FlagSet, c *config.Config) error {
 }
 
 // KnownDirectives implements part of the Configurer interface
-func (b *Bazelle) KnownDirectives() []string {
+func (b *subzelle) KnownDirectives() []string {
 	response, err := b.configurerClient.KnownDirectives(context.Background(), &lpb.KnownDirectivesRequest{})
 	if err != nil {
 		fatalError(err)
@@ -52,7 +52,7 @@ func (b *Bazelle) KnownDirectives() []string {
 }
 
 // Configure implements part of the Configurer interface
-func (b *Bazelle) Configure(c *config.Config, rel string, f *rule.File) {
+func (b *subzelle) Configure(c *config.Config, rel string, f *rule.File) {
 	_, err := b.configurerClient.Configure(context.Background(), &lpb.ConfigureRequest{
 		Config: configToProto(c),
 		Rel:    rel,
