@@ -12,7 +12,9 @@ import (
 )
 
 func startPlugin(dir, executable string, args []string, envVars []string) (*exec.Cmd, error) {
-	ListFiles(dir)
+	// ListFiles(dir)
+
+	log.Println("Subprocess starting in " + dir)
 
 	env := os.Environ()
 	env = append(env, envVars...)
@@ -40,15 +42,15 @@ func startPlugin(dir, executable string, args []string, envVars []string) (*exec
 		}
 	}()
 
-	// err = cmd.Wait()
-	// if err != nil {
-	// 	if exitError, ok := err.(*exec.ExitError); ok {
-	// 		waitStatus := exitError.Sys().(syscall.WaitStatus)
-	// 		// log.Printf("bazel exited with abnormal status: %v", waitStatus.ExitStatus())
-	// 		return err, waitStatus.ExitStatus()
-	// 	}
-	// 	// return fmt.Errorf("could not launch Bazel: %v", err), 1
-	// }
+	err = cmd.Wait()
+	if err != nil {
+		if exitError, ok := err.(*exec.ExitError); ok {
+			waitStatus := exitError.Sys().(syscall.WaitStatus)
+			log.Printf("bazel exited with abnormal status: %v", waitStatus.ExitStatus())
+			return nil, err
+		}
+		// return fmt.Errorf("could not launch Bazel: %v", err), 1
+	}
 
 	// log.Print("bazelisk exited seemingly normally")
 	return cmd, nil

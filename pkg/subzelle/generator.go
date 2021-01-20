@@ -10,7 +10,7 @@ import (
 )
 
 func (b *subzelle) Kinds() map[string]rule.KindInfo {
-	response, err := b.languageClient.Kinds(context.Background(), &lpb.KindsRequest{})
+	response, err := b.client.Kinds(context.Background(), &lpb.KindsRequest{})
 	if err != nil {
 		fatalError(err)
 	}
@@ -24,7 +24,7 @@ func (b *subzelle) Kinds() map[string]rule.KindInfo {
 }
 
 func (b *subzelle) Loads() []rule.LoadInfo {
-	response, err := b.languageClient.Loads(context.Background(), &lpb.LoadsRequest{})
+	response, err := b.client.Loads(context.Background(), &lpb.LoadsRequest{})
 	if err != nil {
 		fatalError(err)
 	}
@@ -35,7 +35,7 @@ func (b *subzelle) Loads() []rule.LoadInfo {
 func (b *subzelle) GenerateRules(args language.GenerateArgs) language.GenerateResult {
 	request := generateArgsToProto(args)
 
-	response, err := b.languageClient.GenerateRules(context.Background(), request)
+	response, err := b.client.GenerateRules(context.Background(), request)
 	if err != nil {
 		fatalError(err)
 	}

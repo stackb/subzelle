@@ -14,7 +14,7 @@ import (
 func (b *subzelle) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config) {
 	configFlagSet := configFlagSetToProto(c, fs)
 
-	response, err := b.configurerClient.RegisterFlags(context.Background(), &lpb.RegisterFlagsRequest{
+	response, err := b.client.RegisterFlags(context.Background(), &lpb.RegisterFlagsRequest{
 		Cmd:           cmd,
 		ConfigFlagSet: configFlagSet,
 	})
@@ -30,7 +30,7 @@ func (b *subzelle) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config)
 func (b *subzelle) CheckFlags(fs *flag.FlagSet, c *config.Config) error {
 	configFlagSet := configFlagSetToProto(c, fs)
 
-	response, err := b.configurerClient.CheckFlags(context.Background(), configFlagSet)
+	response, err := b.client.CheckFlags(context.Background(), configFlagSet)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (b *subzelle) CheckFlags(fs *flag.FlagSet, c *config.Config) error {
 
 // KnownDirectives implements part of the Configurer interface
 func (b *subzelle) KnownDirectives() []string {
-	response, err := b.configurerClient.KnownDirectives(context.Background(), &lpb.KnownDirectivesRequest{})
+	response, err := b.client.KnownDirectives(context.Background(), &lpb.KnownDirectivesRequest{})
 	if err != nil {
 		fatalError(err)
 	}
@@ -53,7 +53,7 @@ func (b *subzelle) KnownDirectives() []string {
 
 // Configure implements part of the Configurer interface
 func (b *subzelle) Configure(c *config.Config, rel string, f *rule.File) {
-	_, err := b.configurerClient.Configure(context.Background(), &lpb.ConfigureRequest{
+	_, err := b.client.Configure(context.Background(), &lpb.ConfigureRequest{
 		Config: configToProto(c),
 		Rel:    rel,
 		File:   fileToProto(f),

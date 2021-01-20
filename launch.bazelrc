@@ -3,3 +3,5 @@ codesearch deps(//cmd/subzelle)
 codesearch deps(//cmd/subzelle:gazelle)
 
 codesearch deps(//example/python:gazelle)
+
+build --action_env

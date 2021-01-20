@@ -4,13 +4,14 @@ load("@rules_proto_grpc//python:defs.bzl", "python_grpc_library")
 
 subzelle_plugin(
     name = "python",
-    executable = ":subzelle_python",
+    executable = ":subzelle",
+    address = "0.0.0.0:50051",
     visibility = ["//visibility:public"],
 )
 
 py_binary(
-    name = "subzelle_python",
-    srcs = ["subzelle_python.py"],
+    name = "subzelle",
+    srcs = ["subzelle.py"],
     deps = [":language_python_grpc"],
 )
 

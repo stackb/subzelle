@@ -1,3 +1,0 @@
-import grpc
-
-print("Hello!")

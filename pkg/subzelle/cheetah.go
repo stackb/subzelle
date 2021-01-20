@@ -19,7 +19,7 @@ import (
 )
 
 type rpcLang struct {
-	client pb.LanguageClient
+	client pb.client
 	conn   *grpc.ClientConn
 }
 
@@ -35,7 +35,7 @@ func NewLanguage() language.Language {
 		fatalError(err)
 	}
 
-	client := pb.NewLanguageClient(conn)
+	client := pb.Newclient(conn)
 	return &rpcLang{
 		client: client,
 		conn:   conn,

@@ -13,11 +13,10 @@ import (
 )
 
 type subzelle struct {
-	plugin           *PluginConfig
-	languageClient   lpb.LanguageClient
-	configurerClient lpb.ConfigurerClient
-	conn             *grpc.ClientConn
-	cmd              *exec.Cmd
+	plugin *PluginConfig
+	client lpb.LanguageClient
+	conn   *grpc.ClientConn
+	cmd    *exec.Cmd
 }
 
 // NewLanguage is the entrypoint for gazelle language plugin
@@ -28,29 +27,33 @@ func NewLanguage() language.Language {
 	plugin := GetPluginConfig()
 	address := plugin.Address
 	if address == "" {
-		address = "localhost:50051"
-		log.Printf("Launching subprocess: %s (%s)", plugin.Executable, address)
-
-		cmd, err = startPlugin(".", plugin.Executable, nil, []string{
+		address = "0.0.0.0:50051"
+		log.Printf("Launching subprocess: %s (%s)", plugin.Path, address)
+		cmd, err = startPlugin(plugin.Root, plugin.Path, nil, []string{
 			fmt.Sprintf("%sADDRESS=%s", PluginEnvVarNamePrefix, address),
 		})
 		if err != nil {
-			fatalError(fmt.Errorf("could not start plugin %q: %v", plugin.Executable, err))
+			fatalError(fmt.Errorf("could not start plugin %q: %v", plugin.Path, err))
 		}
 	} else {
 		log.Fatalf("connection address: %v", address)
 	}
 
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	conn, err := grpc.Dial(address,
+		grpc.WithInsecure(),
+	)
+	log.Printf("connection? %v,%v", conn, err)
 	if err != nil {
+		log.Printf("connection error: %v", err)
 		fatalError(err)
 	}
 
+	log.Printf("connection??? %v", conn)
+
 	return &subzelle{
-		plugin:           plugin,
-		languageClient:   lpb.NewLanguageClient(conn),
-		configurerClient: lpb.NewConfigurerClient(conn),
-		conn:             conn,
-		cmd:              cmd,
+		plugin: plugin,
+		client: lpb.NewLanguageClient(conn),
+		conn:   conn,
+		cmd:    cmd,
 	}
 }

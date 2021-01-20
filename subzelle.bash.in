@@ -18,6 +18,9 @@
 @@GENERATED_MESSAGE@@
 
 set -euo pipefail
+# env 
+# pwd
+# find .
 
 RUNNER_LABEL=@@RUNNER_LABEL@@
 GAZELLE_SHORT_PATH=@@GAZELLE_SHORT_PATH@@
@@ -26,7 +29,7 @@ ARGS=@@ARGS@@
 GOTOOL=@@GOTOOL@@
 export SUBZELLE_PLUGIN_NAME=@@SUBZELLE_PLUGIN_NAME@@
 export SUBZELLE_PLUGIN_ADDRESS=@@SUBZELLE_PLUGIN_ADDRESS@@
-export SUBZELLE_PLUGIN_EXECUTABLE=@@SUBZELLE_PLUGIN_EXECUTABLE@@
+export SUBZELLE_PLUGIN_PATH=@@SUBZELLE_PLUGIN_PATH@@
 
 # find_runfile prints the location of a runfile in the source workspace,
 # either by reading the symbolic link or reading the runfiles manifest.
@@ -71,6 +74,24 @@ function set_goroot {
   fi
 }
 
+# set_pluginroot attempts to set pluginROOT to the SDK used by rules_go. gazelle
+# invokes tools inside the Go SDK for dependency management. It's good to
+# use the SDK used by the workspace in case the Go SDK is not installed
+# on the host system or is a different version.
+function set_pluginroot {
+  local tool=$(realpath "./$SUBZELLE_PLUGIN_PATH")
+  if [ -z "$tool" ]; then
+    echo "$0: warning: could not locate SUBZELLE_PLUGIN_ROOT used by subzelle" >&2
+    return
+  fi
+  # export SUBZELLE_PLUGIN_ROOT=$(cd "$(dirname "$tool")/.."; pwd)
+  export SUBZELLE_PLUGIN_ABSPATH="$tool"
+  if type cygpath >/dev/null 2>&1; then
+    # On Windows, convert the path to something usable outside of bash.
+    SUBZELLE_PLUGIN_ABSPATH=$(cygpath -w "$SUBZELLE_PLUGIN_ABSPATH")
+  fi
+}
+
 # Check whether the script was executed by Bazel. The gazelle macro prepends
 # an argument that tells us this.
 is_bazel_run=false
@@ -93,6 +114,9 @@ if [ "$is_bazel_run" = true ]; then
   # the workspace before running Gazelle.
   # TODO(jayconrod): detect when a command can't be run this way.
   set_goroot
+  set_pluginroot
+
+  # set_runfiles
   gazelle_short_path=$(find_runfile "$GAZELLE_SHORT_PATH")
   if [ -z "$gazelle_short_path" ]; then
     echo "error: could not locate gazelle binary" >&2

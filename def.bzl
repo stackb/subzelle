@@ -43,7 +43,7 @@ def _subzelle_runner_impl(ctx):
         "@@ARGS@@": shell.array_literal(args),
         "@@SUBZELLE_PLUGIN_NAME@@": shell.quote(plugin.name),
         "@@SUBZELLE_PLUGIN_ADDRESS@@": shell.quote(plugin.address),
-        "@@SUBZELLE_PLUGIN_EXECUTABLE@@": shell.quote(plugin.executable.path),
+        "@@SUBZELLE_PLUGIN_PATH@@": shell.quote(plugin.executable.short_path),
         "@@GAZELLE_LABEL@@": shell.quote(str(ctx.attr.subzelle.label)),
         "@@GAZELLE_SHORT_PATH@@": shell.quote(ctx.executable.subzelle.short_path),
         "@@GENERATED_MESSAGE@@": """
